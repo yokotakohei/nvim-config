@@ -1,4 +1,12 @@
 --------------------------------------------------------------------------------
+-- キー設定
+--------------------------------------------------------------------------------
+
+-- leader キーをスペースに設定します．
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+--------------------------------------------------------------------------------
 -- プラグイン設定
 --------------------------------------------------------------------------------
 
@@ -253,3 +261,99 @@ vim.opt.pumblend = 20
 
 -- ターミナルの透過を反映するための設定です。
 vim.cmd "hi normal guibg=none"
+
+--------------------------------------------------------------------------------
+-- CopilotChat キーマッピング
+--------------------------------------------------------------------------------
+
+-- チャットウィンドウのトグル
+vim.keymap.set('n', '<leader>cc', ':CopilotChatToggle<CR>', { desc = "CopilotChat: チャットトグル" })
+vim.keymap.set('n', '<leader>cq', ':CopilotChat ', { desc = "CopilotChat: クイック質問" })
+
+-- ビジュアルモード選択でのアクション
+vim.keymap.set('v', '<leader>ce', ':CopilotChatExplain<CR>', { desc = "CopilotChat: コードの説明" })
+vim.keymap.set('v', '<leader>cr', ':CopilotChatReview<CR>', { desc = "CopilotChat: コードレビュー" })
+vim.keymap.set('v', '<leader>cf', ':CopilotChatFix<CR>', { desc = "CopilotChat: コード修正" })
+vim.keymap.set('v', '<leader>co', ':CopilotChatOptimize<CR>', { desc = "CopilotChat: 最適化" })
+vim.keymap.set('v', '<leader>cd', ':CopilotChatDocs<CR>', { desc = "CopilotChat: ドキュメント生成" })
+vim.keymap.set('v', '<leader>ct', ':CopilotChatTests<CR>', { desc = "CopilotChat: テスト生成" })
+
+-- ノーマルモードでのアクション
+vim.keymap.set('n', '<leader>cD', ':CopilotChatFixDiagnostic<CR>', { desc = "CopilotChat: 診断修正" })
+vim.keymap.set('n', '<leader>cco', ':CopilotChatCommit<CR>', { desc = "CopilotChat: コミットメッセージ" })
+vim.keymap.set('n', '<leader>cs', ':CopilotChatCommitStaged<CR>', { desc = "CopilotChat: ステージ済みコミット" })
+
+-- バッファ全体を対象にした質問
+vim.keymap.set('n', '<leader>cb', ':CopilotChatBuffer ', { desc = "CopilotChat: バッファについて質問" })
+
+-- インラインチャット（ビジュアル選択でプロンプト入力）
+vim.keymap.set('v', '<leader>ci', function()
+  local input = vim.fn.input("CopilotChat: ")
+  if input ~= "" then
+    vim.cmd("'<,'>CopilotChat " .. input)
+  end
+end, { desc = "CopilotChat: 選択範囲を編集" })
+
+-- 選択範囲に対して直接質問
+vim.keymap.set('v', '<leader>cq', ':CopilotChat ', { desc = "CopilotChat: 選択範囲について質問" })
+
+-- 履歴管理
+vim.keymap.set('n', '<leader>ch', ':CopilotChatLoad<CR>', { desc = "CopilotChat: 履歴を読み込む" })
+vim.keymap.set('n', '<leader>cH', ':CopilotChatClearHistory<CR>', { desc = "CopilotChat: 現在の履歴をクリア" })
+
+--------------------------------------------------------------------------------
+-- CopilotChat モデル選択
+--------------------------------------------------------------------------------
+
+-- 利用可能なモデルリスト
+local copilot_models = {
+  "gpt-4o",
+  "gpt-4o-mini",
+  "gpt-4",
+  "gpt-4-turbo",
+  "gpt-3.5-turbo",
+  "o1-mini",
+  "o1-preview",
+  "claude-3.5-sonnet",
+}
+
+-- モデルを選択するコマンド (補完付き)
+vim.api.nvim_create_user_command('CopilotChatModel', function(opts)
+  local model = opts.args
+  if model == "" then
+    print("現在のモデル: " .. (vim.g.copilot_chat_model or "gpt-4o"))
+  else
+    vim.g.copilot_chat_model = model
+    require("CopilotChat").setup({ model = model })
+    print("モデルを " .. model .. " に変更しました")
+  end
+end, {
+  nargs = '?',
+  complete = function()
+    return copilot_models
+  end,
+  desc = "CopilotChat のモデルを変更"
+})
+
+-- モデル選択のキーマッピング
+vim.keymap.set('n', '<leader>cm', ':CopilotChatModel ', { desc = "CopilotChat: モデル選択" })
+
+--------------------------------------------------------------------------------
+-- CopilotChat 履歴管理コマンド
+--------------------------------------------------------------------------------
+
+-- 履歴ディレクトリ内のすべてのファイルを削除するコマンド
+vim.api.nvim_create_user_command('CopilotChatDeleteAllHistory', function()
+  local history_path = vim.fn.expand("~/.local/share/nvim/copilot_chat_history")
+  local choice = vim.fn.confirm("すべての CopilotCha 履歴を削除しますか？", "&Yes\n&No", 2)
+  if choice == 1 then
+    vim.fn.system("rm -rf " .. history_path .. "/*")
+    print("すべての CopilotChat 履歴を削除しました")
+  end
+end, { desc = "すべての CopilotChat 履歴を削除" })
+
+-- 履歴ディレクトリを開くコマンド
+vim.api.nvim_create_user_command('CopilotChatOpenHistoryDir', function()
+  local history_path = vim.fn.expand("~/.local/share/nvim/copilot_chat_history")
+  vim.cmd("edit " .. history_path)
+end, { desc = "CopilotChat 履歴ディレクトリを開く" })

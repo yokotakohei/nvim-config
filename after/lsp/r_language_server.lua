@@ -6,7 +6,7 @@ return {
   settings = {
     r = {
       lsp = {
-        debug = true, -- デバッグ モードを有効にする（オプション）
+        debug = true, -- デバッグ モードを有効にする (オプション)
         use_stdio = true, -- stdio モードを使用する
       }
     }
