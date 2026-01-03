@@ -376,7 +376,7 @@ local function detect_environment()
   local env = {}
 
   -- Linux
-  env.is_linux = (vim.fn.has("unix") == 1) and (vim.fn.has("wsl") ~= 1)
+  env.is_linux = vim.fn.has("unix") == 1 and not vim.fn.has("wsl") == 1
 
   -- Windows
   env.is_windows = vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1
@@ -398,8 +398,8 @@ if env.is_linux then
   vim.api.nvim_set_keymap("i", "<silent> <Esc>", "<Esc>:call system('fcitx5-remote -c')<CR>", { noremap = true })
 elseif env.is_vscode or env.is_wsl then
   vim.o.shell = "/usr/bin/bash --login"
-  vim.cmd([[autocmd InsertLeave * call system('cmd.exe /c zenhan.exe 0')]])
-  vim.cmd([[autocmd CmdlineLeave * call system('cmd.exe /c zenhan.exe 0')]])
+  vim.cmd('autocmd InsertLeave * :call system("zenhan.exe 0")')
+  vim.cmd('autocmd CmdlineLeave * :call system("zenhan.exe 0")')
 elseif env.is_windows then
   vim.o.shell = "cmd.exe"
   vim.cmd("autocmd InsertLeave * :call system('zenhan 0')")
