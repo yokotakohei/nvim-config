@@ -4,5 +4,6 @@ return {
         "fortls",
         "--lowercase_intrinsics",
         "--debug_log",
-    }
+    },
+    autostart = false
 }
