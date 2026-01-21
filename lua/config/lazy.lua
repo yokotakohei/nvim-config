@@ -35,7 +35,7 @@ local plugins = {
   },
 
   ------------------------------------------------------------------------------
-  -- 補完 関係のプラグイン
+  -- 補完関係のプラグイン
   ------------------------------------------------------------------------------
 
   -- 補完エンジン プラグイン
@@ -131,11 +131,33 @@ local plugins = {
       require("plugins.indent_blankline_config").setup()
     end
   },
+
+  ------------------------------------------------------------------------------
+  -- Git に関するプラグイン
+  ------------------------------------------------------------------------------
+
+  --- Git の機能を統合するためのプラグイン
+  "lewis6991/gitsigns.nvim",
+
+  ------------------------------------------------------------------------------
+  -- DAP (Debug Adapter Protocol) に関するプラグイン
+  ------------------------------------------------------------------------------
+
+  --- DAP の UI を提供するプラグイン
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      "nvim-neotest/nvim-nio",
+      { "theHamsta/nvim-dap-virtual-text", opts = {} },
+    },
+    config = function()
+      require("plugins.dap_config").setup()
+    end
+  },
 }
 
-
-local opts = {
-}
+local opts = {}
 
 -- Setup lazy.nvim
 require("lazy").setup(plugins, opts)
