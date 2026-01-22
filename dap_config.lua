@@ -3,7 +3,6 @@ local M = {}
 function M.setup()
   local dap = require("dap")
   local dapui = require("dapui")
-  dap.defaults.fallback.terminal_win_cmd = "belowright split +resize 15"
 
   ------------------------------------------------------------------------------
   -- DAP UI の設定
