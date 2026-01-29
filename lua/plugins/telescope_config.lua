@@ -34,6 +34,20 @@ function M.setup()
     ":Telescope file_browser<CR>",
     { noremap = true }
   )
+
+  vim.api.nvim_set_keymap(
+    "n",
+    "<space>tcb",
+    ":Telescope current_buffer_fuzzy_find<CR>",
+    { noremap = true }
+  )
+
+  vim.api.nvim_set_keymap(
+    "n",
+    "<space>tlg",
+    ":Telescope live_grep<CR>",
+    { noremap = true }
+  )
 end
 
 return M
