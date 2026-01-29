@@ -108,6 +108,17 @@ local plugins = {
      end
   },
 
+  -- 末尾の空白を検出するプラグイン
+  {
+    "yokotakohei/detect-whitespace.nvim",
+    config = function()
+      require("detect_whitespace").setup({
+        highlight_group = "DetectWhitespace",
+        enable_on_setup = true,
+      })
+    end
+  },
+
   ------------------------------------------------------------------------------
   -- 画面表示に関するプラグイン
   ------------------------------------------------------------------------------
