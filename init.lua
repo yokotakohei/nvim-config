@@ -61,7 +61,7 @@ vim.lsp.enable("pyright")
 vim.lsp.enable("r_language_server")
 
 -- typescript_language_server の設定
-vim.lsp.enable("typescript-language-server")
+vim.lsp.enable("ts_ls")
 
 --------------------------------------------------------------------------------
 -- 独自コマンドの設定

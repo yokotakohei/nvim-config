@@ -5,5 +5,5 @@ return {
         "--lowercase_intrinsics",
         "--debug_log",
     },
-    autostart = false
+    autostart = true,
 }
