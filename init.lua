@@ -366,7 +366,6 @@ vim.api.nvim_create_user_command('CopilotChatOpenHistoryDir', function()
   vim.cmd("edit " .. history_path)
 end, { desc = "CopilotChat 履歴ディレクトリを開く" })
 
-
 --------------------------------------------------------------------------------
 -- IME の切替
 --------------------------------------------------------------------------------
@@ -407,11 +406,20 @@ elseif env.is_windows then
 end
 
 --------------------------------------------------------------------------------
--- Clipboard 設定 (WSL)
+-- Clipboard 設定
+--
+-- WSL 環境では win32yank.exe を経由して Windows のクリップボードと連携する。
+-- DevContainer (Docker) 内では .exe が実行できないため、ターミナルの
+-- OSC 52 エスケープシーケンスを利用してクリップボードへアクセスする。
+-- OSC 52 は Windows Terminal / WezTerm 等の対応ターミナルが必要。
+--
+-- OSC 52 のペースト（読み取り）はターミナルの応答がコンテナまで届かず
+-- 失敗することがあるため、コピーのみ OSC 52 を使い、ペーストは
+-- ターミナル側の操作（Ctrl+Shift+V 等）で行う。
 --------------------------------------------------------------------------------
+local in_container = vim.fn.filereadable("/.dockerenv") == 1
 
-local has_win32yank = vim.fn.executable("win32yank.exe") == 1
-if env.is_wsl and has_win32yank then
+if env.is_wsl and vim.fn.executable("win32yank.exe") == 1 and not in_container then
   vim.g.clipboard = {
     name = "win32yank",
     copy = {
@@ -424,6 +432,16 @@ if env.is_wsl and has_win32yank then
     },
   }
 else
-  -- devcontainer / 非 WSL
-  vim.opt.clipboard = ""
+  vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+      ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+      ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+    },
+    paste = {
+      ["+"] = "",
+      ["*"] = "",
+    },
+  }
 end
+
