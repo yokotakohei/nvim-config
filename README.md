@@ -1,5 +1,5 @@
 # nvim-config
-My Neovim configuration by Lua
+My Neovim configuration written in Lua
 
 ## External Dependencies
 
@@ -80,16 +80,40 @@ sudo apt install git
 
 ### Optional Tools
 
-#### zenhan
-Required for IME control on Windows (win-ime-con.nvim plugin).
+#### zenhan / fcitx5
+Required for IME control (win-ime-con.nvim plugin).
 
 **Windows:**
+
 ```powershell
 # Download from https://github.com/iuchim/zenhan
 # Place zenhan.exe in your PATH
 ```
 
-**Note:** This tool is Windows-only and not required on Linux systems.
+**WSL:**
+
+```bash
+# zenhan.exe must be accessible from WSL via the Windows PATH.
+# Normally, the Windows PATH is automatically inherited via /mnt/c/...
+```
+
+**Linux (or Docker container):**
+
+```bash
+# If using fcitx5
+sudo apt update
+sudo apt install fcitx5
+```
+
+**Note:**  If no IME control tool is found in the environment (e.g., a Docker container), IME switching is silently skipped.
+
+#### TypeScript with tsserver
+
+Required for TypeScript language server (after/lsp/ts_ls.lua).
+
+```
+npm install -g typescript
+```
 
 #### Python with debugpy
 Required for Python debugging with nvim-dap.

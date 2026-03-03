@@ -235,9 +235,14 @@ vim.opt.showmatch = true
 -- 不可視文字を可視化します。
 vim.opt.list = true
 
--- オートインデントを設定します。
-vim.opt.smartindent = true
+-- smartindent は「#」がインデントされないなどの問題があるためオフにします．
+vim.opt.smartindent = false
+
+-- 改行時に前の行の深さを引き継ぎます．
 vim.opt.autoindent = true
+
+-- 言語ごとのインデント ルールを有効化します．
+vim.cmd('filetype plugin indent on')
 
 -- 一行あたりの文字数を制限しないようにします。
 vim.opt.textwidth = 0
@@ -392,17 +397,69 @@ end
 -- 実行環境を取得
 local env = detect_environment()
 
--- モード変更時IME自動オフ
-if env.is_linux then
-  vim.api.nvim_set_keymap("i", "<silent> <Esc>", "<Esc>:call system('fcitx5-remote -c')<CR>", { noremap = true })
-elseif env.is_vscode or env.is_wsl then
+-- シェル設定
+if env.is_wsl or env.is_vscode then
   vim.o.shell = "/usr/bin/bash --login"
-  vim.cmd('autocmd InsertLeave * :call system("zenhan.exe 0")')
-  vim.cmd('autocmd CmdlineLeave * :call system("zenhan.exe 0")')
 elseif env.is_windows then
   vim.o.shell = "cmd.exe"
-  vim.cmd("autocmd InsertLeave * :call system('zenhan 0')")
-  vim.cmd("autocmd CmdlineLeave * :call system('zenhan 0')")
+end
+
+-- IME 状態の保存・復元
+-- InsertLeave 時に IME をオフにし，InsertEnter 時に前回の状態を復元する．
+-- 利用可能な IME 制御コマンドを自動検出し，Windows / WSL / Docker いずれでも動作する．
+do
+  local ime_cmd
+
+  if env.is_windows and vim.fn.executable("zenhan") == 1 then
+    ime_cmd = {
+      get = function() return tonumber(vim.trim(vim.fn.system("zenhan"))) or 0 end,
+      off = function() vim.fn.system("zenhan 0") end,
+      on  = function() vim.fn.system("zenhan 1") end,
+    }
+  elseif vim.fn.executable("zenhan.exe") == 1 then
+    ime_cmd = {
+      get = function() return tonumber(vim.trim(vim.fn.system("zenhan.exe"))) or 0 end,
+      off = function() vim.fn.system("zenhan.exe 0") end,
+      on  = function() vim.fn.system("zenhan.exe 1") end,
+    }
+  elseif vim.fn.executable("fcitx5-remote") == 1 then
+    ime_cmd = {
+      get = function()
+        return tonumber(vim.trim(vim.fn.system("fcitx5-remote"))) == 2 and 1 or 0
+      end,
+      off = function() vim.fn.system("fcitx5-remote -c") end,
+      on  = function() vim.fn.system("fcitx5-remote -o") end,
+    }
+  end
+
+  if ime_cmd then
+    local saved_ime = 0
+    local group = vim.api.nvim_create_augroup("IMEControl", { clear = true })
+
+    vim.api.nvim_create_autocmd("InsertLeave", {
+      group = group,
+      callback = function()
+        saved_ime = ime_cmd.get()
+        ime_cmd.off()
+      end,
+    })
+
+    vim.api.nvim_create_autocmd("InsertEnter", {
+      group = group,
+      callback = function()
+        if saved_ime == 1 then
+          ime_cmd.on()
+        end
+      end,
+    })
+
+    vim.api.nvim_create_autocmd("CmdlineLeave", {
+      group = group,
+      callback = function()
+        ime_cmd.off()
+      end,
+    })
+  end
 end
 
 --------------------------------------------------------------------------------
