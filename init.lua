@@ -19,6 +19,21 @@ require "config.lazy"
 -- コメント行のインデントを有効にします．
 vim.opt.formatoptions:append("c")
 
+-- undo 履歴を有効化します．
+vim.opt.undofile = true
+
+-- OS を問わず適切なデータ保存場所を取得します．
+-- Windows: ~/AppData/Local/nvim-data/undo
+-- Linux/macOS: ~/.local/share/nvim/undo
+local undo_path = vim.fn.stdpath("data") .. "/undo"
+
+-- ディレクトリが存在しない場合は作成します．
+if vim.fn.isdirectory(undo_path) == 0 then
+    vim.fn.mkdir(undo_path, "p")
+end
+
+vim.opt.undodir = undo_path
+
 --------------------------------------------------------------------------------
 -- ファイル別設定
 --------------------------------------------------------------------------------
