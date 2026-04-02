@@ -53,9 +53,9 @@ local plugins = {
   ------------------------------------------------------------------------------
 
   -- Copilot 関連 (個別ファイルから読み込み)
-  require("plugins.copilot_config"),
-  require("plugins.copilot-cmp_config"),
-  require("plugins.copilot_chat_config"),
+  -- require("plugins.copilot_config"),
+  -- require("plugins.copilot-cmp_config"),
+  -- require("plugins.copilot_chat_config"),
 
   ------------------------------------------------------------------------------
   -- ファジー ファインダー関係のプラグイン
