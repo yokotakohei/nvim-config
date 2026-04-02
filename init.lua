@@ -160,7 +160,7 @@ local function check_encoding()
   if vim.api.nvim_buf_get_name(0) == "" then
     return
   end
-  
+
   -- UTF-8 でない場合、Shift_JIS で開き直します。
   if encoding ~= "utf-8" then
     vim.cmd("e ++enc=cp932")

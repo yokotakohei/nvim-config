@@ -2,7 +2,7 @@ local M = {}
 
 function M.setup()
   local cmp = require("cmp")
-  
+
   -- Tab キーでインデントと補完を切り替える関数
   local has_words_before = function()
     if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
