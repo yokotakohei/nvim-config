@@ -78,6 +78,12 @@ vim.lsp.enable("r_language_server")
 -- typescript_language_server の設定
 vim.lsp.enable("ts_ls")
 
+-- typos-lsp の設定 (英語スペルチェック)
+vim.lsp.enable("typos_lsp")
+
+-- harper-ls の設定 (英語の文法チェック)
+vim.lsp.enable("harper_ls")
+
 --------------------------------------------------------------------------------
 -- 独自コマンドの設定
 --------------------------------------------------------------------------------
