@@ -49,9 +49,9 @@ vim.g.tex_conceal = ""
 --------------------------------------------------------------------------------
 
 -- LSP ハンドラーの設定
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
-)
+vim.diagnostic.config({
+    virtual_text = false,
+})
 
 -- レファレンス ハイライトの設定 (カーソル下の変数のハイライト)
 -- vim.cmd [[
@@ -78,12 +78,6 @@ vim.lsp.enable("r_language_server")
 -- typescript_language_server の設定
 vim.lsp.enable("ts_ls")
 
--- typos-lsp の設定 (英語スペルチェック)
-vim.lsp.enable("typos_lsp")
-
--- harper-ls の設定 (英語の文法チェック)
-vim.lsp.enable("harper_ls")
-
 --------------------------------------------------------------------------------
 -- 独自コマンドの設定
 --------------------------------------------------------------------------------
@@ -94,6 +88,9 @@ require("config.ripgrep_config").setup()
 --------------------------------------------------------------------------------
 -- キー マップ設定
 --------------------------------------------------------------------------------
+
+-- Ctrl + i を本来の「ジャンプ進む」に明示的に割り当てます。
+vim.keymap.set('n', '<C-i>', '<C-i>', { noremap = true })
 
 -- LSP キー マップ
 vim.keymap.set('n', 'K',  '<cmd>lua vim.lsp.buf.hover()<CR>')
