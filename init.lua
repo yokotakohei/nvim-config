@@ -277,6 +277,10 @@ vim.opt.winblend = 20
 -- 補完に使われるポップアップ メニューの透過度を設定します。
 vim.opt.pumblend = 20
 
+-- ポップアップメニューに罫線を追加します。
+vim.o.pumborder = "rounded"
+vim.opt.completeopt = {"menu", "menuone", "noselect", "fuzzy", "popup"}
+
 -- ターミナルの透過を反映するための設定です。
 vim.cmd "hi normal guibg=none"
 
